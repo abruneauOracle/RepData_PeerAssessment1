@@ -1,6 +1,5 @@
 # Reproducible Research: Peer Assessment 1
 
-
 ## Loading and preprocessing the data
 
 Assuming the `activity.csv` is in your working directory, you can load data.
@@ -119,3 +118,32 @@ steps.newMedian <- median(steps.newAggregate$steps)
 As we can see, mean didn't changed but median did. The median is now equal to the mean. By using the average value of the interval to fill `NA` values, we removed the unbalance caused by `NA` values.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Lets create an new factor variable name `date.is` that identify **weekdays** and **weekend**
+
+
+```r
+data.new$date = as.Date(as.character(data.new$date), "%Y-%m-%d")
+data.new["date.is"] <- factor(sapply(data.new$date, function(d) {
+    if (weekdays(d) == "dimanche" | weekdays(d) == "samedi") {
+        "weekend"
+    } else {
+        "weekday"
+    }
+}))
+```
+
+Now we can calculate the of steps per time `interval` and per `date.is` and plot an the result
+
+
+```r
+steps.avg.dateIs <- aggregate(steps ~ interval + date.is, mean, data = data.new)
+
+library(lattice)
+xyplot(steps ~ interval | date.is, data = steps.avg.dateIs, type = "l", layout = c(2, 
+    1), xlab = "Interval", ylab = "Number of steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+
+
